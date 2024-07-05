@@ -1,0 +1,10 @@
+honeypot_addr: 192.168.1.23:22
+real_ssh_addr: 127.0.0.1:22
+ssh_port: 2222
+allowlist:
+  #  - 192.168.1.0/24
+  #  - 10.0.0.5
+users:
+  - username: honeyuser
+    ssh_key: ssh-rsa AAAAB3Nz...
+    private_key: ./testkey
