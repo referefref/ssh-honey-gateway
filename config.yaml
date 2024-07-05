@@ -1,9 +1,10 @@
 honeypot_addr: 192.168.1.23:22
 real_ssh_addr: 127.0.0.1:22
-ssh_port: 2222
+ssh_port: 2222 # exposed port for gateway
+log_file_path: /path/to/logfile
 allowlist:
-  #  - 192.168.1.0/24
-  #  - 10.0.0.5
+    - 192.168.1.0/24 # range
+    - 10.0.0.5 # single IP
 users:
   - username: honeyuser
     ssh_key: ssh-rsa AAAAB3Nz...
