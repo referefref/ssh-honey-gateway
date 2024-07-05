@@ -1,4 +1,6 @@
 # SSH-Honey-Gateway
+![image](https://github.com/referefref/ssh-honey-gateway/assets/56499429/5778c796-ce34-40bb-ad25-116d1764b1a1)
+
 
 SSH-Honey-Gateway is a lightweight SSH proxy appliance that decides where to forward SSH connections based on the authentication credentials provided. It can forward connections to a honeypot server for specific credentials or to a real SSH server for other connections. Additionally, it supports allowlisting of IPs or IP ranges that bypass the validation and are forwarded directly to the real SSH server.
 
