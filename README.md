@@ -8,6 +8,7 @@ SSH-Honey-Gateway is a lightweight SSH proxy appliance that decides where to for
 - **Allowlisting**: Allow specific IPs or IP ranges to bypass validation.
 - **Configurable Port**: Specify which port the SSH proxy server listens on.
 - **Easy Configuration**: Simple YAML configuration file for setting up users, keys, and servers.
+- **Logging**: Log all matched key connections, including datetime and source IP, to a file.
 
 ## Installation
 
