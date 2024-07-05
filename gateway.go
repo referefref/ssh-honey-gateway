@@ -6,6 +6,8 @@ import (
 	"io/ioutil"
 	"log"
 	"net"
+	"os"
+	"time"
 	"gopkg.in/yaml.v2"
 	"github.com/gliderlabs/ssh"
 	gossh "golang.org/x/crypto/ssh"
@@ -19,6 +21,7 @@ type Config struct {
 	HoneypotAddr string                     `yaml:"honeypot_addr"`
 	RealSSHAddr  string                     `yaml:"real_ssh_addr"`
 	SSHPort      int                        `yaml:"ssh_port"`
+	LogFilePath  string                     `yaml:"log_file_path"`
 }
 
 type User struct {
@@ -44,6 +47,7 @@ func loadConfig(filePath string) error {
 		RealSSHAddr  string   `yaml:"real_ssh_addr"`
 		SSHPort      int      `yaml:"ssh_port"`
 		Allowlist    []string `yaml:"allowlist"`
+		LogFilePath  string   `yaml:"log_file_path"`
 		Users        []User   `yaml:"users"`
 	}
 
@@ -55,6 +59,7 @@ func loadConfig(filePath string) error {
 	config.HoneypotAddr = rawConfig.HoneypotAddr
 	config.RealSSHAddr = rawConfig.RealSSHAddr
 	config.SSHPort = rawConfig.SSHPort
+	config.LogFilePath = rawConfig.LogFilePath
 
 	// Parse allowlist
 	for _, cidr := range rawConfig.Allowlist {
@@ -101,6 +106,20 @@ func isAllowlisted(ip string) bool {
 	return false
 }
 
+func logMatchedKeyConnection(username, ip string) {
+	f, err := os.OpenFile(config.LogFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Printf("Failed to open log file: %v", err)
+		return
+	}
+	defer f.Close()
+
+	logEntry := fmt.Sprintf("%s - Username: %s, IP: %s\n", time.Now().Format(time.RFC3339), username, ip)
+	if _, err := f.WriteString(logEntry); err != nil {
+		log.Printf("Failed to write to log file: %v", err)
+	}
+}
+
 func main() {
 	configFilePath := "config.yaml" // Path to your config file
 
@@ -129,6 +148,7 @@ func main() {
 				log.Printf("Received public key for user %s: %s", user, marshaledKey)
 				if validateSSHKey(user, pubKey) {
 					log.Printf("SSH key for user %s matches, forwarding to honeypot", user)
+					logMatchedKeyConnection(user, clientIP)
 					privateKeyPath := config.PrivateKeys[user]
 					forwardToHoneypot(s, config.HoneypotAddr, user, privateKeyPath)
 					return
